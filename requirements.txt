@@ -10,3 +10,4 @@ streamlit-analytics
 streamlit-metrics
 matplotlib
 pdfkit
+wkhtmltopdf
