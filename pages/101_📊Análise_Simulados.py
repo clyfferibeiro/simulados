@@ -135,8 +135,9 @@ if uploaded_file is not None:
 
     print = dados.sort_values(by='Diferença')
     print = print.rename(columns={'Numeração': 'Questão'})
-    print
-    df_pdf = print.drop(['Área', 'Competência', 'Gabarito'], axis=1)
+    #print
+    df_pdf = print.drop(['Área', 'Habilidade', 'Competência', 'Gabarito'], axis=1)
+    df_pdf
     #dataframe_to_pdf(df_pdf, 'test_1.pdf')
 
     f = open('exp.html','w')
