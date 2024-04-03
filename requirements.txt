@@ -8,4 +8,4 @@ requests
 plotly_express
 streamlit-analytics
 streamlit-metrics
-matlibplot
+matplotlib
