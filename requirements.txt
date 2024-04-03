@@ -9,3 +9,4 @@ plotly_express
 streamlit-analytics
 streamlit-metrics
 matplotlib
+pdfkit
