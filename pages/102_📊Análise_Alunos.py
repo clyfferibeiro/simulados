@@ -20,10 +20,10 @@ def clear_submit():
 
 
 @st.cache_data
-def carregar_dados():
+def carregar_dados_sisu():
     # tabela = pd.concat(map(pd.read_excel, glob.glob('Resultado_9ano.xlsx')))
     # tabela['ano'] = tabela['ano'].apply(lambda _: str(_))
-    tabela = pd.read_excel('conjunto1_3serie2023.xlsx')
+    tabela = pd.read_excel('sisu2024.xlsx', sheet_name=1)
     return tabela
 
 def _draw_as_table(df, pagesize):
@@ -80,13 +80,13 @@ if uploaded_file is not None:
 
     lista2 = []
     for i in dados['Nome'].unique():
-        lista2.append([i, dados['Média sem RD'][dados['Nome']==i].values])
-    df2 = pd.DataFrame(lista2, columns=['Aluno', 'Média Sem RD'])
-    df2['Média Sem RD'] = df2['Média Sem RD'].astype(float)
+        lista2.append([i, dados['Média com RD'][dados['Nome']==i].values])
+    df2 = pd.DataFrame(lista2, columns=['Aluno', 'Média com RD'])
+    df2['Média com RD'] = df2['Média com RD'].astype(float)
     
     
-    fig2 = px.bar(df2, x = 'Aluno',  y = 'Média Sem RD',
-                                barmode='group', title=f'Média Sem Redação dos Alunos - {nome_arquivo}',
+    fig2 = px.bar(df2, x = 'Aluno',  y = 'Média com RD',
+                                barmode='group', title=f'Média com Redação dos Alunos - {nome_arquivo}',
                                 labels = {'value': '',
                                           'index': ''},
                                             height=800, width=1280, text_auto = True,).update_xaxes(categoryorder="total descending")
@@ -154,6 +154,21 @@ if uploaded_file is not None:
 
     fig_MT
 
+    lista_RD = []
+    for i in dados['Nome'].unique():
+        lista_RD.append([i, dados['Nota RD'][dados['Nome']==i].values])
+    df_RD = pd.DataFrame(lista_RD, columns=['Aluno', 'Nota RD'])
+    df_RD['Nota RD'] = df_RD['Nota RD'].astype(float)
+
+    fig_RD = px.bar(df_RD, x = 'Aluno',  y = 'Nota RD',
+                                barmode='group', title=f'Notas Redação - {nome_arquivo}',
+                                labels = {'value': '',
+                                          'index': ''},
+                                            height=800, width=1280, text_auto = True,).update_xaxes(categoryorder="total descending")
+    #fig.for_each_trace(lambda t: t.update(name = newnames[t.name]))
+
+    fig_RD
+
 
     Aluno = st.selectbox("Selecione um Aluno", dados["Nome"].sort_values().unique())
 
@@ -173,6 +188,8 @@ if uploaded_file is not None:
     dados["Porcentagem MT"] = dados["Porcentagem MT"].astype(float)
     dados['Média sem RD'] = dados["Média sem RD"].replace(',', '.', regex=True)
     dados["Média sem RD"] = dados["Média sem RD"].astype(float)
+    dados['Média com RD'] = dados["Média com RD"].replace(',', '.', regex=True)
+    dados["Média com RD"] = dados["Média com RD"].astype(float)
 
     lista = []
     for i in ['Porcentagem CH', 'Porcentagem LC', 'Porcentagem CN', 'Porcentagem MT']:
@@ -192,7 +209,7 @@ if uploaded_file is not None:
     #df
 
     lista1 = []
-    for j in ['Nota CH', 'Nota LC', 'Nota CN', 'Nota MT']:
+    for j in ['Nota CH', 'Nota LC', 'Nota CN', 'Nota MT', 'Nota RD']:
         lista1.append([j, dados[j].values])
     df1 = pd.DataFrame(lista1, columns=['Área', 'Nota'])
     df1['Nota'] = df1['Nota'].astype(float)
@@ -204,63 +221,42 @@ if uploaded_file is not None:
                                             height=800, width=1280, text_auto = True,).update_xaxes(categoryorder="total descending")
     #fig.for_each_trace(lambda t: t.update(name = newnames[t.name]))
 
-    y = dados.iat[0, 21]
+    y = dados.iat[0, 22]
     fig_tri.add_shape( # add a horizontal "target" line
     label_textposition='end', label_font_size=22, label_text=f'Média Geral do Aluno = {y}',     
     type="line", line_color="salmon", line_width=4, opacity=1, line_dash="dot",
     x0=0, x1=1, xref="paper", y0=y, y1=y, yref="y")
     
     fig_tri
-    #df1
 
-
-
-
-    # dados = dados[dados["Disciplina"]==disciplina]
+    sisu = carregar_dados_sisu()
     
     
-    # fig_disciplina = px.bar(dados, x='Numeração', y = ['Percentual de acerto geral', 'Percentual de acerto escola'],
-    #                              barmode='group', title=f'Percentual de Acerto por Questão - {disciplina} - {nome_arquivo}',
-    #                             labels = {'Numeração': 'Questão do Simulado',
-    #                                       'value': 'Média'},
-    #                                         height=800, width=1280, text_auto = True,)
+    universidade = st.selectbox("Selecione uma universidade", sisu['SG_IES'].sort_values().unique())
+    #sisu
+    sisu = sisu[sisu['TIPO_CONCORRENCIA']=="AC"]
+    #st.table(sisu[sisu['NO_CURSO']=='MEDICINA'])
 
-    # fig_disciplina.update_layout(
-    #         xaxis=dict(
-    #             tickvals = dados['Numeração']
-    #         )
-    #     )
-    # #fig_disciplina.update_layout(yaxis = {"categoryorder":"total ascending"})
-    # fig_disciplina
-
-    # print = dados.sort_values(by='Diferença')
-    # print = print.rename(columns={'Numeração': 'Questão'})
-    # print
-    # df_pdf = print.drop(['Área', 'Competência', 'Gabarito'], axis=1)
-    # #dataframe_to_pdf(df_pdf, 'test_1.pdf')
-
-    # f = open('exp.html','w')
-    # a = df_pdf.to_html()
-    # f.write(a)
-    # f.close()
-
-     
-    # options = {
-    # 'page-size': 'Letter',
-    # 'margin-top': '0.75in',
-    # 'margin-right': '0.75in',
-    # 'margin-bottom': '0.75in',
-    # 'margin-left': '0.75in',
-    # 'encoding': "UTF-8",
-    # 'custom-header': [
-    #     ('Accept-Encoding', 'gzip')
-    # ],
-    # 'no-outline': None
-    # }
+    sisu = sisu[sisu['SG_IES']==universidade]
     
+    sisu = sisu[sisu['NU_NOTACORTE']<=y]
+    sisu = sisu.rename(columns={"SG_IES": "Univ.", 
+                         "NO_CAMPUS": "Campus",
+                         "NO_MUNICIPIO_CAMPUS": "Cidade",
+                         "NO_CURSO": "Curso",
+                         "DS_GRAU": "Grau",
+                         "DS_TURNO": "Turno",
+                         "NU_NOTACORTE": "Nota de Corte"})
+   
+    
+    aprovado = sisu.drop(['EDICAO', 'CO_IES', 'DS_ORGANIZACAO_ACADEMICA', 'SG_UF_CAMPUS', 'DS_REGIAO_CAMPUS', 
+                          'CO_IES_CURSO', 'TP_MOD_CONCORRENCIA', 'DS_MOD_CONCORRENCIA', 'NU_PERCENTUAL_BONUS', 
+                          'QT_INSCRICAO', 'NO_IES', 'DS_CATEGORIA_ADM', 'QT_VAGAS_OFERTADAS', 'TIPO_CONCORRENCIA'], axis=1)
+    
+    aprovado = aprovado.sort_values(by='Nota de Corte')
+    st.markdown("Cursos Aprovados na 1ª Chamada 2024 na universidade selecionada, com base no resultado do simulado. Ampla Concorrência!")
+    #st.table(aprovado)
+    st.table(aprovado.assign(hack='').set_index('hack'))
 
-    # pdfkit.from_file('exp.html', disciplina, options=options)
-
-    # df2 = df[df['Disciplina']==disciplina]
-    # df2
-
+    
+    
