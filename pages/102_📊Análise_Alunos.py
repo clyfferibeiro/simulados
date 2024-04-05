@@ -231,13 +231,12 @@ if uploaded_file is not None:
 
     sisu = carregar_dados_sisu()
     
-    
-    universidade = st.selectbox("Selecione uma universidade", sisu['SG_IES'].sort_values().unique())
+    universidade = st.selectbox("Selecione uma universidade", sisu['NO_IES'].sort_values().unique(), index=None)
     #sisu
     sisu = sisu[sisu['TIPO_CONCORRENCIA']=="AC"]
     #st.table(sisu[sisu['NO_CURSO']=='MEDICINA'])
 
-    sisu = sisu[sisu['SG_IES']==universidade]
+    sisu = sisu[sisu['NO_IES']==universidade]
     
     sisu = sisu[sisu['NU_NOTACORTE']<=y]
     sisu = sisu.rename(columns={"SG_IES": "Univ.", 
