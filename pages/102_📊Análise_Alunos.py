@@ -62,9 +62,6 @@ def dataframe_to_pdf(df, filename, numpages=(1, 1), pagesize=(11, 8.5)):
             plt.close()
 
 
-
-
-
 uploaded_file = st.file_uploader("Faça o upload do Arquivo Desejado", type='xlsx')
 if uploaded_file is not None:
     data = pd.read_excel(uploaded_file)
@@ -170,7 +167,7 @@ if uploaded_file is not None:
     fig_RD
 
 
-    Aluno = st.selectbox("Selecione um Aluno", dados["Nome"].sort_values().unique())
+    Aluno = st.sidebar.selectbox("Selecione um Aluno", dados["Nome"].sort_values().unique())
 
     dados = dados[dados["Nome"]==Aluno]
 
@@ -230,15 +227,7 @@ if uploaded_file is not None:
     fig_tri
 
     sisu = carregar_dados_sisu()
-    
-    universidade = st.selectbox("Selecione uma universidade", sisu['NO_IES'].sort_values().unique(), index=None)
-    #sisu
-    sisu = sisu[sisu['TIPO_CONCORRENCIA']=="AC"]
-    #st.table(sisu[sisu['NO_CURSO']=='MEDICINA'])
 
-    sisu = sisu[sisu['NO_IES']==universidade]
-    
-    sisu = sisu[sisu['NU_NOTACORTE']<=y]
     sisu = sisu.rename(columns={"SG_IES": "Univ.", 
                          "NO_CAMPUS": "Campus",
                          "NO_MUNICIPIO_CAMPUS": "Cidade",
@@ -246,9 +235,25 @@ if uploaded_file is not None:
                          "DS_GRAU": "Grau",
                          "DS_TURNO": "Turno",
                          "NU_NOTACORTE": "Nota de Corte"})
+    
+    universidade = st.selectbox("Selecione uma universidade", sisu['NO_IES'].sort_values().unique(), index=None)
+    #sisu
+    sisu = sisu[sisu['TIPO_CONCORRENCIA']=="AC"]
+    #st.table(sisu[sisu['NO_CURSO']=='MEDICINA'])
+
+    sisu_filtrado = sisu[sisu['NO_IES']==universidade]
+    
+    sisu_filtrado = sisu_filtrado[sisu_filtrado['Nota de Corte']<=y]
+    # sisu = sisu.rename(columns={"SG_IES": "Univ.", 
+    #                      "NO_CAMPUS": "Campus",
+    #                      "NO_MUNICIPIO_CAMPUS": "Cidade",
+    #                      "NO_CURSO": "Curso",
+    #                      "DS_GRAU": "Grau",
+    #                      "DS_TURNO": "Turno",
+    #                      "NU_NOTACORTE": "Nota de Corte"})
    
     
-    aprovado = sisu.drop(['EDICAO', 'CO_IES', 'DS_ORGANIZACAO_ACADEMICA', 'SG_UF_CAMPUS', 'DS_REGIAO_CAMPUS', 
+    aprovado = sisu_filtrado.drop(['EDICAO', 'CO_IES', 'DS_ORGANIZACAO_ACADEMICA', 'SG_UF_CAMPUS', 'DS_REGIAO_CAMPUS', 
                           'CO_IES_CURSO', 'TP_MOD_CONCORRENCIA', 'DS_MOD_CONCORRENCIA', 'NU_PERCENTUAL_BONUS', 
                           'QT_INSCRICAO', 'NO_IES', 'DS_CATEGORIA_ADM', 'QT_VAGAS_OFERTADAS', 'TIPO_CONCORRENCIA'], axis=1)
     
@@ -256,6 +261,46 @@ if uploaded_file is not None:
     st.markdown("Cursos Aprovados na 1ª Chamada 2024 na universidade selecionada, com base no resultado do simulado. Ampla Concorrência!")
     #st.table(aprovado)
     st.table(aprovado.assign(hack='').set_index('hack'))
+
+    curso_pretendido = st.selectbox("Selecione o Curso Pretendido", sisu['Curso'].sort_values().unique(), index=None)
+
+    df_curso = sisu[sisu['Curso']==curso_pretendido]
+
+    univ_curso = df_curso.drop(['EDICAO', 'CO_IES', 'DS_ORGANIZACAO_ACADEMICA', 'SG_UF_CAMPUS', 'DS_REGIAO_CAMPUS', 
+                          'CO_IES_CURSO', 'TP_MOD_CONCORRENCIA', 'DS_MOD_CONCORRENCIA', 'NU_PERCENTUAL_BONUS', 
+                          'QT_INSCRICAO', 'NO_IES', 'DS_CATEGORIA_ADM', 'QT_VAGAS_OFERTADAS', 'TIPO_CONCORRENCIA'], axis=1)
+    
+    univ_curso = univ_curso.sort_values(by='Nota de Corte')
+    # st.markdown("Cursos Aprovados na 1ª Chamada 2024 na universidade selecionada, com base no resultado do simulado. Ampla Concorrência!")
+    # #st.table(aprovado)
+    # st.table(univ_curso.assign(hack='').set_index('hack'))
+
+    # teste = univ_curso.style.apply(axis=1, func=apply_style)
+    # univ_curso
+    df = univ_curso
+    df = df.style.applymap(lambda x: f"background-color: {'green' if x<y else 'red'}", subset='Nota de Corte')
+    # st.table(df.assign(hack='').set_index('hack'))
+    # df = st.dataframe(df)
+    st.markdown(f'Nota Média {Aluno} = {y}')
+    st.table(df)
+    # st.dataframe(df)
+
+    # ['background-color: green']*len(curso) if curso['Nota de Corte']<600 else ['background-color: red']*len(curso)
+    # print(univ_curso['Nota de Corte'])
+    # if (univ_curso[univ_curso['Nota de Corte']]<y):
+    #     cor = ['background-color: red']*len(curso)
+    # else:
+    #     cor = ['background-color: green']*len(curso)
+
+    # st.dataframe(univ_curso.style.apply(cor, axis=1))
+    
+    # if (univ_curso['Nota de Corte'].values <= y):
+    #     # return ['background-color: green'] * len(linha)
+    #     teste = univ_curso.style.apply(['background-color: green'] * len(linha))
+    # else:
+    #     # return ['background-color: red'] * len(linha)
+    #     teste = univ_curso.style.apply(['background-color: red'] * len(linha))
+    # st.table(teste)
 
     
     
