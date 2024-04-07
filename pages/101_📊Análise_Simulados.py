@@ -141,37 +141,37 @@ if uploaded_file is not None:
     st.table(df_pdf.assign(hack='').set_index('hack'))
     #dataframe_to_pdf(df_pdf, 'test_1.pdf')
 
-    if st.button('Gerar PDF'):
-        f = open('exp.html','w')
-        a = df_pdf.to_html()
-        f.write(a)
-        f.close()
+    # if st.button('Gerar PDF'):
+    #     f = open('exp.html','w')
+    #     a = df_pdf.to_html()
+    #     f.write(a)
+    #     f.close()
 
      
-        options = {
-        'page-size': 'Letter',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-        'encoding': "UTF-8",
-        'custom-header': [
-            ('Accept-Encoding', 'gzip')
-        ],
-        'no-outline': None
-        }
+    #     options = {
+    #     'page-size': 'Letter',
+    #     'margin-top': '0.75in',
+    #     'margin-right': '0.75in',
+    #     'margin-bottom': '0.75in',
+    #     'margin-left': '0.75in',
+    #     'encoding': "UTF-8",
+    #     'custom-header': [
+    #         ('Accept-Encoding', 'gzip')
+    #     ],
+    #     'no-outline': None
+    #     }
         
 
-        pdfkit.from_file('exp.html', disciplina, options=options)
+    #     pdfkit.from_file('exp.html', disciplina, options=options)
 
-    nome_pdf = f'{disciplina}'
-    with open(nome_pdf, "rb") as pdf_file:
-        PDFbyte = pdf_file.read()
+    # # nome_pdf = f'{disciplina}'
+    # # with open(nome_pdf, "rb") as pdf_file:
+    # #     PDFbyte = pdf_file.read()
 
-    st.download_button(label="Download PDF",
-                    data=PDFbyte,
-                    file_name=f'{disciplina}.pdf',
-                    mime='application/octet-stream')
+    # st.download_button(label="Download PDF",
+    #                 data=PDFbyte,
+    #                 file_name=f'{disciplina}.pdf',
+    #                 mime='application/octet-stream')
 
     df2 = df[df['Disciplina']==disciplina]
     #df2
